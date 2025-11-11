@@ -32,6 +32,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _errorMessage;
   StreamSubscription<Position>? _positionStream;
   String? _currentAddress;
+  String? distanceToPNB;
+
+  final double pnbLatitude = 37.42796133580664;
+  final double pnbLongitude = -122.085749655962;
 
   @override
   void dispose() {
@@ -110,8 +114,18 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() {
               _currentPosition = position;
               _errorMessage = null;
+
+              double distanceInMeters = Geolocator.distanceBetween(
+                position.latitude,
+                position.longitude,
+                pnbLatitude,
+                pnbLongitude,
+              );
+
+              distanceToPNB = "${distanceInMeters.toStringAsFixed(2)} meter";
             });
             _getAddressFromLatLng(position);
+
           }, onError: (e) {
             setState(() {
               _errorMessage = e.toString();
@@ -191,6 +205,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
                             "Alamat: $_currentAddress",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        if (distanceToPNB != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            "Jarak ke PNB: $distanceToPNB",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
